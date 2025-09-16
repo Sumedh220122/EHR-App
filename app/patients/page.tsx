@@ -10,6 +10,11 @@ export default function PatientsPage() {
   const [operation, setOperation] = useState<"getById" | "create" | "update" | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
 
+  const handleOperationSelect = (selectedOperation: "getById" | "create" | "update") => {
+    setOperation(selectedOperation);
+    setPatient(null); // Clear previous patient data
+  };
+
   const handleSubmit = async (formData: Record<string, string>) => {
     if (operation === "getById") {
       const res = await fetch(`/api/v1/patients/${formData.patientId}`);
@@ -52,8 +57,9 @@ export default function PatientsPage() {
 
   return (
     <main className="p-6">
-      <OperationSelector onSelect={setOperation} />
-      {(operation === "getById" || operation == "create" || operation == "update") && <PatientForm operation={operation} onSubmit={handleSubmit} />}
+      <OperationSelector onSelect={handleOperationSelect} />
+      {(operation === "getById" || operation == "create" || operation == "update") && 
+      <PatientForm operation={operation} onSubmit={handleSubmit} />}
       {patient && <PatientCard patient={patient} />}
     </main>
   );

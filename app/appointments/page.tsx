@@ -10,6 +10,11 @@ export default function AppointmentsPage() {
   const [operation, setOperation] = useState<"getById" | "create" | "reschedule" | "cancel" | null>(null);
   const [patient, setAppointment] = useState<Appointment | null>(null);
 
+  const handleOperationSelect = (selectedOperation: "getById" | "create" | "reschedule" | "cancel") => {
+    setOperation(selectedOperation);
+    setAppointment(null); // Clear previous patient data
+  };
+
   const handleSubmit = async (formData: Record<string, string>) => {
     if (operation === "getById") {
         try{
@@ -67,7 +72,7 @@ export default function AppointmentsPage() {
 
   return (
     <main className="p-6">
-      <OperationSelector onSelect={setOperation} />
+      <OperationSelector onSelect={handleOperationSelect} />
       {(operation === "getById" || operation == "create" || operation == "reschedule" || operation == "cancel") && 
         <AppointmentForm operation={operation} onSubmit={handleSubmit} />}
       {patient && <AppointmentCard appointment={patient} />}

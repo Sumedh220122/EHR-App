@@ -7,21 +7,21 @@ interface Props {
 
 export default function OperationSelector({ onSelect }: Props) {
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex justify-center gap-6 flex-wrap pt-8">
       <button
-        className="w-64 py-4 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700"
+        className="px-6 py-4 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 font-medium"
         onClick={() => onSelect("getById")}
       >
         Get Patient by ID
       </button>
       <button
-        className="w-64 py-4 bg-green-600 text-white rounded-xl shadow hover:bg-green-700"
+        className="px-6 py-4 bg-green-600 text-white rounded-xl shadow-lg hover:bg-green-700 hover:shadow-xl transition-all duration-200 font-medium"
         onClick={() => onSelect("create")}
       >
         Create Patient
       </button>
       <button
-        className="w-64 py-4 bg-yellow-500 text-white rounded-xl shadow hover:bg-yellow-600"
+        className="px-6 py-4 bg-yellow-500 text-white rounded-xl shadow-lg hover:bg-yellow-600 hover:shadow-xl transition-all duration-200 font-medium"
         onClick={() => onSelect("update")}
       >
         Update Patient

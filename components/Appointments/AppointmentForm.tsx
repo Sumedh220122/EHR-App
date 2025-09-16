@@ -25,23 +25,38 @@ export default function AppointmentForm({ operation, onSubmit }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4 w-full max-w-md">
-      {fieldsByOperation[operation].map((field) => (
-        <input
-          key={field}
-          name={field}
-          placeholder={`Enter ${field}`}
-          value={formData[field] || ""}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        />
-      ))}
-      <button
-        type="submit"
-        className="w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-      >
-        Submit
-      </button>
-    </form>
+    <div className="flex justify-center mt-8">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md bg-white p-8 rounded-xl shadow-lg border">
+        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+          {operation === "getById" && "Get Appointment by ID"}
+          {operation === "create" && "Create New Appointment"}
+          {operation === "reschedule" && "Reschedule Appointment"}
+          {operation === "cancel" && "Cancel Appointment"}
+        </h2>
+
+        {fieldsByOperation[operation].map((field) => (
+          <div key={field} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 capitalize">
+              {field.replace('_', ' ')}
+            </label>
+            <input
+              name={field}
+              placeholder={`Enter ${field.replace('_', ' ')}`}
+              value={formData[field] || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 outline-none"
+              required
+            />
+          </div>
+        ))}
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
   );
 }
