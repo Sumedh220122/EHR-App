@@ -8,8 +8,18 @@ interface Params {
 
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const {id} = await context.params;
-    const patient = await patientService.getPatientById(id);
+    const api_key = req.headers.get('x-api-key');
+    const username = req.headers.get('x-username');
+
+    if (!api_key || !username) {
+      return NextResponse.json(
+        { error: 'Missing credentials in headers' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await context.params;
+    const patient = await patientService.getPatientById(id, api_key, username);
 
     if (!patient) {
       return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
@@ -24,7 +34,17 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
 
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const {id} = await context.params;
+    const api_key = req.headers.get('x-api-key');
+    const username = req.headers.get('x-username');
+
+    if (!api_key || !username) {
+      return NextResponse.json(
+        { error: 'Missing credentials in headers' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await context.params;
     const body = await req.json();
 
     const { first_name, last_name, dob, sex } = body;
@@ -36,7 +56,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
       );
     }
 
-    const newPatient = await patientService.updatePatient(id, { first_name, last_name, dob, sex });
+    const newPatient = await patientService.updatePatient(id, { first_name, last_name, dob, sex }, api_key, username);
 
     return NextResponse.json(newPatient, { status: 201 });
   } catch (error) {

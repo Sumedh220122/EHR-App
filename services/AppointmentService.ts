@@ -1,25 +1,23 @@
 import {Appointment, IRescheduleAppointment, Patient} from "../types/appointment";
 
 export class AppointmentService {
-    private api_key: string;
-    private username: string;
     private base_url: string;
 
-    private creds: string;
-
     constructor(){
-        this.api_key = process.env.NEXT_PUBLIC_SECRET_KEY || "";
-        this.username = process.env.NEXT_PUBLIC_USERNAME || "";
         this.base_url = process.env.NEXT_PUBLIC_FHIR_URI || "";
-        this.creds = Buffer.from(`${this.username}:${this.api_key}`).toString("base64");
     }
 
-    async getAppointmentById(id: string): Promise<Appointment> {
+    private getCredentials(api_key: string, username: string): string {
+        return Buffer.from(`${username}:${api_key}`).toString("base64");
+    }
+
+    async getAppointmentById(id: string, api_key: string, username: string): Promise<Appointment> {
         try{
+            const creds = this.getCredentials(api_key, username);
             const response = await fetch(`${this.base_url}/appointments/${id}`, {
                 method: "GET",
                 headers: {
-                    "Authorization": `Basic ${this.creds}`,
+                    "Authorization": `Basic ${creds}`,
                     "Content-Type": "application/json",
                 },
             });
@@ -54,13 +52,14 @@ export class AppointmentService {
     async createAppointment(data: {
         start_date_time: string, end_date_time: string, provider_id: string, 
         appointment_type: string, title: string, appointment_note: string
-    }) : Promise<Appointment>{    
+    }, api_key: string, username: string) : Promise<Appointment>{    
 
         try{
+            const creds = this.getCredentials(api_key, username);
             const response = await fetch(`${this.base_url}/appointments`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Basic ${this.creds}`,
+                    "Authorization": `Basic ${creds}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data)
@@ -92,12 +91,13 @@ export class AppointmentService {
         }
     }
 
-    async rescheduleAppointment(id: string, update_data: IRescheduleAppointment): Promise<Appointment>{
+    async rescheduleAppointment(id: string, update_data: IRescheduleAppointment, api_key: string, username: string): Promise<Appointment>{
         try{
+            const creds = this.getCredentials(api_key, username);
             const response = await fetch(`${this.base_url}/appointments/${id}`, {
                 method: "PATCH",
                 headers: {
-                    "Authorization": `Basic ${this.creds}`,
+                    "Authorization": `Basic ${creds}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(update_data)
@@ -129,9 +129,9 @@ export class AppointmentService {
         }
     }
     
-    async cancelAppointment(appointment_id: string){
+    async cancelAppointment(appointment_id: string, api_key: string, username: string){
         try{
-            return this.rescheduleAppointment(appointment_id, {status: "cancelled"});
+            return this.rescheduleAppointment(appointment_id, {status: "cancelled"}, api_key, username);
         }catch(error){
             throw error;
         }

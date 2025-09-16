@@ -4,69 +4,59 @@ import { useState } from "react";
 import OperationSelector from "../../components/Appointments/OperationSelector";
 import AppointmentForm from "../../components/Appointments/AppointmentForm";
 import AppointmentCard from "../../components/Appointments/AppointmentCard";
+import { useApiClient } from "../../hooks/useApiClient";
 import type { Appointment } from "../../types/appointment";
 
 export default function AppointmentsPage() {
   const [operation, setOperation] = useState<"getById" | "create" | "reschedule" | "cancel" | null>(null);
-  const [patient, setAppointment] = useState<Appointment | null>(null);
+  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const { apiCall } = useApiClient();
 
   const handleOperationSelect = (selectedOperation: "getById" | "create" | "reschedule" | "cancel") => {
     setOperation(selectedOperation);
-    setAppointment(null); // Clear previous patient data
+    setAppointment(null); // Clear previous appointment data
   };
 
   const handleSubmit = async (formData: Record<string, string>) => {
-    if (operation === "getById") {
-        try{
-            const res = await fetch(`/api/v1/appointments/${formData.appointmentId}`);
-            const data: Appointment = await res.json();
-            setAppointment(data);
-        }catch(error){
-            alert("Could not fetch appointment. Invalid appointment ID!!");
-        }
-    }
-    else if(operation == "create"){
-        const res = await fetch('/api/v1/appointments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                start_date_time: formData.start_time,
-                end_date_time: formData.end_time,
-                provider_id: formData.provider_id,
-                appointment_type: formData.appointment_type,
-                title: formData.title,
-                appointment_note: formData.appointment_note,
-            }),
-        });
-        const data: Appointment = await res.json();
+    try {
+      if (operation === "getById") {
+        const data: Appointment = await apiCall(`/api/v1/appointments/${formData.appointmentId}`);
         setAppointment(data);
-    }
-    else if(operation == "reschedule"){
-        const res = await fetch(`/api/v1/appointments/${formData.appointmentId}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                start_time: formData.start_time,
-                pt_id: formData.pt_id,
-            }),
+      }
+      else if(operation == "create"){
+        const data: Appointment = await apiCall('/api/v1/appointments', {
+          method: 'POST',
+          body: JSON.stringify({
+            start_date_time: formData.start_time,
+            end_date_time: formData.end_time,
+            provider_id: formData.provider_id,
+            appointment_type: formData.appointment_type,
+            title: formData.title,
+            appointment_note: formData.appointment_note,
+          }),
         });
-        const data: Appointment = await res.json();
         setAppointment(data);
-    }
-    else if(operation == "cancel"){
-        const res = await fetch(`/api/v1/appointments/${formData.appointmentId}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: null,
+      }
+      else if(operation == "reschedule"){
+        const data: Appointment = await apiCall(`/api/v1/appointments/${formData.appointmentId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            start_time: formData.start_time,
+            pt_id: formData.pt_id,
+          }),
         });
-        const data: Appointment = await res.json();
         setAppointment(data);
+      }
+      else if(operation == "cancel"){
+        const data: Appointment = await apiCall(`/api/v1/appointments/${formData.appointmentId}`, {
+          method: 'PATCH',
+          body: null,
+        });
+        setAppointment(data);
+      }
+    } catch (error) {
+      console.error('API call failed:', error);
+      alert(`Operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -75,7 +65,7 @@ export default function AppointmentsPage() {
       <OperationSelector onSelect={handleOperationSelect} />
       {(operation === "getById" || operation == "create" || operation == "reschedule" || operation == "cancel") && 
         <AppointmentForm operation={operation} onSubmit={handleSubmit} />}
-      {patient && <AppointmentCard appointment={patient} />}
+      {appointment && <AppointmentCard appointment={appointment} />}
     </main>
   );
 }
