@@ -41,21 +41,25 @@ export default function PatientForm({ operation, onSubmit }: Props) {
           {operation === "update" && "Update Patient"}
         </h2>
 
-        {fieldsByOperation[operation].map((field) => (
-          <div key={field} className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 capitalize">
-              {field.replace('_', ' ')}
-            </label>
-            <input
-              name={field}
-              placeholder={`Enter ${field.replace('_', ' ')}`}
-              value={formData[field] || ""}
-              onChange={handleChange}
-              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 outline-none"
-              required
-            />
-          </div>
-        ))}
+        {fieldsByOperation[operation].map((field) => {
+          const fieldId = `${operation}-${field}`;
+          return (
+            <div key={field} className="space-y-2">
+              <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700 capitalize">
+                {field.replace('_', ' ')}
+              </label>
+              <input
+                id={fieldId}
+                name={field}
+                placeholder={`Enter ${field.replace('_', ' ')}`}
+                value={formData[field] || ""}
+                onChange={handleChange}
+                className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 outline-none"
+                required
+              />
+            </div>
+          );
+        })}
 
         <button
           type="submit"
