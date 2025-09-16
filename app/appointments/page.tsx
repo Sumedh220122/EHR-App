@@ -27,8 +27,8 @@ export default function AppointmentsPage() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                start_time: formData.start_time,
-                end_time: formData.end_time,
+                start_date_time: formData.start_time,
+                end_date_time: formData.end_time,
                 provider_id: formData.provider_id,
                 appointment_type: formData.appointment_type,
                 title: formData.title,

@@ -5,16 +5,16 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        const {start_time, end_time, provider_id, appointment_type, title, appointment_note} = body;
+        const {start_date_time, end_date_time, provider_id, appointment_type, title, appointment_note} = body;
 
-        if (!start_time || !end_time || !provider_id || !appointment_type || !title ||!appointment_note) {
+        if (!start_date_time || !end_date_time || !provider_id || !appointment_type || !title ||!appointment_note) {
             return NextResponse.json(
                 { error: 'Missing required fields '},
                 { status: 400 }
             );
         }
         const newAppointment = await appointmentService.createAppointment(
-            {start_time, end_time, provider_id, appointment_type, title, appointment_note}
+            {start_date_time, end_date_time, provider_id, appointment_type, title, appointment_note}
         );
         return NextResponse.json(newAppointment, { status: 201 });
     } catch (error) {

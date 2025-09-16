@@ -52,7 +52,7 @@ export class AppointmentService {
     }
 
     async createAppointment(data: {
-        start_time: string, end_time: string, provider_id: number, 
+        start_date_time: string, end_date_time: string, provider_id: string, 
         appointment_type: string, title: string, appointment_note: string
     }) : Promise<Appointment>{    
 
